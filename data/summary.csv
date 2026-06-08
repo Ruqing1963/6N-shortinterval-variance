@@ -1,0 +1,13 @@
+parameter,value
+LIMIT_6N_max,600000000
+NMAX_centres,100000000
+n_twin_centres,2166300
+p0_global_twin_rate,0.0216630
+G_generic_4tuple_correlation,0.396880
+Kmax_pair_separation,3000
+crossover_H_star,409.3
+sum_Cmeas_minus_1_kle3000,45.000
+sum_CHL_minus_1_kle3000,-5.468
+mean_C_measured,1.0150
+mean_C_HL,0.9982
+median_abs_rel_resid_C,0.0169
