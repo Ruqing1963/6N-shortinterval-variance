@@ -1,0 +1,312 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage[expansion=false]{microtype}
+\usepackage[hidelinks]{hyperref}
+\setlength{\emergencystretch}{3em}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{remark}{Remark}
+
+\newcommand{\twin}{\mathrm{twin}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\E}{\mathbb{E}}
+
+\title{\bf Twin Counts in Short Intervals:\\
+Singular-Series Rigidity and the Density-Gradient Variance%
+\thanks{Code and measured data: \url{https://github.com/Ruqing1963/6N-shortinterval-variance}}}
+\author{Ruqing Chen\\
+\small GUT Geoservice Inc., Montreal, Quebec, Canada\\
+\small \texttt{ruqing@hotmail.com}}
+\date{June 8, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We measure the variance of the number of twin centres in short intervals on the $6N$ skeleton,
+the natural Montgomery--Soundararajan question for the twin constellation, sieving all centres to
+$6N\le 6\times10^{8}$ ($2{,}166{,}300$ twin centres). Partitioning the centre axis into disjoint
+windows of length $H$, the Fano factor $F(H)=\Var/\mathrm{mean}$ traces a clean crossover: it is
+\emph{sub-Poisson} for small windows (dipping to $F\approx0.92$ near $H\approx50$), crosses $F=1$ at
+$H^{\ast}\approx410$, and rises steeply super-Poisson thereafter ($F\approx37$ at $H=10^{5}$). We
+explain the whole curve with two cleanly separable mechanisms. (i) The local pair correlation
+$C(k)$ of twin centres at separation $k$ is governed exactly by the Hardy--Littlewood singular series
+of the $4$-tuple of offsets $\{-1,1,6k-1,6k+1\}$; we derive the closed form
+$C(k)=G\prod_{p\mid k}\frac{p-2}{p-4}\prod_{p\mid 3k\pm1}\frac{p-3}{p-4}$ with generic constant
+$G=\prod_{p>3}\bigl(1-\tfrac{4}{(p-2)^2}\bigr)=0.39688$, and verify it against the data to a median of
+$1.7\%$ across $k\le3000$, reproducing every arithmetic spike. Crucially the integrated local
+correlation is \emph{negative}, $\sum_{k}(C(k)-1)<0$: the four-fold killer constraint makes twin
+centres locally \emph{more} regular than Poisson, and this rigidity is exactly the sub-Poisson dip.
+(ii) The super-Poisson rise is not local at all: it is the smooth deterministic decline of twin
+density across $[1,X]$. Density-detrending splits the variance into a local part $F_{\rm local}(H)$,
+which stays sub-Poisson and tracks the singular-series prediction to $\approx1\%$, and a trend part
+$F_{\rm trend}(H)\propto H$ ($\Var_{\rm trend}\propto H^{2}$), which reaches $92\%$ of the total at
+$H=10^{5}$. The crossover $H^{\ast}$ marks where the global density gradient overtakes the local
+arithmetic rigidity. We state plainly what we do \emph{not} resolve: the genuine
+Montgomery--Soundararajan lower-order term---the $H\log(X/H)$ fluctuation at fixed density and the
+asymptotic Gaussianity---sits below resolution at reachable $H$ and $X$, dominated by rigidity and by
+the deterministic trend; we bound where it must live and leave it open. As throughout, this is a
+measurement, not a theorem; the Hardy--Littlewood heuristic is taken as input and no claim is made
+about the infinitude of twins.
+\end{abstract}
+
+\section{Introduction}
+The distribution of primes in short intervals is one of the most-studied lower-order questions in
+analytic number theory. Writing $\psi(x)=\sum_{n\le x}\Lambda(n)$, Goldston--Montgomery and then
+Montgomery--Soundararajan \cite{MS} established, conditionally on the Hardy--Littlewood prime-tuple
+conjecture, that the variance of $\psi(x+H)-\psi(x)$ over $x\in[X,2X]$ behaves like
+$H\bigl(\log(X/H)-A\bigr)$ in a wide range of $H$, with an explicit lower-order constant $A$, and that
+the fluctuations are asymptotically Gaussian. The leading term is forced by the singular series; the
+lower-order constant and the limiting distribution are the delicate, genuinely open-feeling content.
+
+This programme has measured the first moment of twin-centre density (Part~I), the second-order
+inter-centre residual (Part~IV), the microscopic root $1/(q-2)$ of the mean shift (Part~XII), and the
+$\omega$-conditioned second moment of the prime-factor count (Part~XXVI); Part~XXVIII audited the
+twin-enrichment closed form against real centres \cite{PXXVIII}. What it has \emph{not} done is the
+spatial short-interval count variance---the Montgomery--Soundararajan question transposed to the twin
+constellation on the $6N$ skeleton. That is the subject here.
+
+The skeleton makes the experiment clean. Primes $>3$ live at $6N\pm1$; a centre $N$ is a
+\emph{twin centre} when $6N-1$ and $6N+1$ are both prime. We sieve every centre to
+$6N\le 6\times10^{8}$ (so $N\le 10^{8}$), finding $2{,}166{,}300$ twin centres at global rate
+$p_{0}=0.0216630$, partition $[1,N_{\max}]$ into disjoint windows of $H$ consecutive centres, count
+twin centres per window, and study the Fano factor $F(H)=\Var(\text{count})/\E(\text{count})$ as a
+function of $H$. A Poisson process gives $F\equiv1$; the deviation is the whole signal.
+
+The result is a clean two-mechanism picture. The local arithmetic (the Hardy--Littlewood $4$-tuple
+singular series) makes twin centres \emph{sub}-Poisson at short range---a rigidity we derive in closed
+form and verify to $1.7\%$. The smooth decline of twin density across $[1,X]$ makes the count
+\emph{super}-Poisson at long range. The two cross at $H^{\ast}\approx410$. The genuine
+Montgomery--Soundararajan lower-order term lives between them, below what $X=6\times10^{8}$ can
+resolve; we say so explicitly rather than fit it.
+
+\section{Method: two scales in one count}
+For a window $W=\{a+1,\dots,a+H\}$ of $H$ consecutive centres, let
+$T(W)=\sum_{N\in W}\mathbf{1}_{\twin}(N)$. Over the $m=\lfloor N_{\max}/H\rfloor$ disjoint windows we
+form the sample mean and variance and the Fano factor $F(H)$. Counts are extracted from a single
+prefix-sum array, so every $F(H)$ is exact for the realised sieve. Writing
+$\gamma(k)=\E[\mathbf{1}_{\twin}(N)\mathbf{1}_{\twin}(N+k)]-p_{0}^{2}$ for the centred pair
+correlation and $C(k)=1+\gamma(k)/p_{0}^{2}$ for its normalised form, stationarity gives the exact
+identity
+\begin{equation}
+F(H)=(1-p_{0})+\frac{2p_{0}}{H}\sum_{k=1}^{H-1}(H-k)\,\bigl(C(k)-1\bigr).
+\label{eq:identity}
+\end{equation}
+Equation~\eqref{eq:identity} is the hinge of the paper: it routes the variance entirely through the
+pair correlation $C(k)$, and $C(k)$ in turn carries two physically distinct contents. At short range
+$C(k)$ is the \emph{local arithmetic}---the chance that two centres a fixed distance apart are both
+twin, set by congruence constraints. At long range $C(k)$ also feels the \emph{smooth density
+gradient}: because the twin density declines over $[1,X]$, even uncorrelated regions contribute a
+positive offset to $C(k)$ that is nearly independent of $k$. Separating these two is the analysis.
+
+\section{The Fano crossover}
+Figure~\ref{fig:fig1}(A) and Table~\ref{tab:fano} give the measured $F(H)$. The curve is sub-Poisson
+for small $H$, with a shallow minimum $F\approx0.92$ near $H\approx30$--$100$; it crosses $F=1$ at
+$H^{\ast}\approx410$; and it rises steeply afterwards, reaching $F\approx37$ by $H=10^{5}$. A purely
+Poisson twin process would sit flat at $F=1$; the data do neither thing a Poisson process would do,
+and they do them in opposite directions at the two ends. The remainder of the paper identifies the
+mechanism at each end.
+
+\begin{table}[t]
+\centering\small
+\begin{tabular}{rccc}
+\toprule
+$H$ & $F_{\rm total}$ & $F_{\rm local}$ (detrended) & $F_{\rm trend}$\\
+\midrule
+10      & 0.944  & 0.940 & 0.003\\
+30      & 0.924  & 0.913 & 0.010\\
+100     & 0.925  & 0.890 & 0.034\\
+300     & 0.967  & 0.860 & 0.102\\
+400     & 0.997  & 0.854 & 0.136\\
+500     & 1.028  & 0.850 & 0.170\\
+1000    & 1.193  & 0.836 & 0.341\\
+3000    & 1.889  & 0.819 & 1.023\\
+10000   & 4.437  & 0.868 & 3.410\\
+30000   & 11.736 & 1.030 & 10.229\\
+100000  & 36.986 & 1.322 & 34.076\\
+\bottomrule
+\end{tabular}
+\caption{Measured Fano factor and its decomposition (\S5). $F_{\rm total}$ uses all windows;
+$F_{\rm local}$ is the variance of counts after removing the smooth local density (smoothing scale
+$W=10^{6}$); $F_{\rm trend}$ is the variance of the smooth expected counts. The local part stays
+sub-Poisson; the trend part grows linearly and dominates at large $H$. (The $F_{\rm local}$ rise for
+$H\gtrsim10^{4}$ is residual trend leakage as $H$ approaches $W$, not a local effect; see \S6.)}
+\label{tab:fano}
+\end{table}
+
+\section{The local engine: the Hardy--Littlewood $4$-tuple}
+Two twin centres at $N$ and $N+k$ require the four numbers $6N+\{-1,1,6k-1,6k+1\}$ all prime. For a
+prime $p>3$ the count of forbidden residues of $N\bmod p$ equals the number of distinct residues
+$\omega_{p}(k)$ of the offset set $\{-1,1,6k-1,6k+1\}\bmod p$ (multiplication by the unit
+$6^{-1}$ and negation are bijections). Generically the four offsets are distinct, $\omega_{p}=4$; they
+collide only when $p$ divides one of the differences $2(3k-1),\,6k,\,2(3k+1)$, i.e.\ when
+$p\mid 3k-1$, $p\mid k$, or $p\mid 3k+1$ (these events are mutually exclusive for $p>3$). The local
+factor of $C(k)$ at $p$ is $(p-\omega_{p})\,p/(p-2)^{2}$, giving
+\begin{equation}
+\boxed{\;C(k)=G\,\prod_{\substack{p\mid k\\p>3}}\frac{p-2}{p-4}\;
+\prod_{\substack{p\mid 3k-1\\p>3}}\frac{p-3}{p-4}\;
+\prod_{\substack{p\mid 3k+1\\p>3}}\frac{p-3}{p-4}\;},\qquad
+G=\prod_{p>3}\frac{(p-4)\,p}{(p-2)^{2}}=\prod_{p>3}\Bigl(1-\frac{4}{(p-2)^{2}}\Bigr).
+\label{eq:Ck}
+\end{equation}
+The generic constant evaluates to $G=0.39688$: at a ``neutral'' separation (no small prime dividing
+$k$ or $3k\pm1$) two twin centres are \emph{anti}-correlated by a factor $\approx0.40$, the price of
+the four-fold killer constraint. The corrections are sharp arithmetic boosts: a prime dividing $k$
+collapses the two pairs onto $\{-1,1\}\bmod p$ (factor $(p-2)/(p-4)$), and a prime dividing
+$3k\pm1$ merges one residue (factor $(p-3)/(p-4)$).
+
+Equation~\eqref{eq:Ck} is not a fit. Table~\ref{tab:Ck} and Figure~\ref{fig:fig1}(B) place it against
+the measured correlation. The neutral value is recovered at once: $C(1)=0.4015$ against $G=0.3969$
+($k=1$ has no small special prime). Every spike lands: $C(5)=1.62$ ($5\mid k$ and $7\mid 3k\!-\!1$),
+$C(35)=2.30$ ($5,7\mid k$), $C(210)=2.25$, $C(2310)=3.08$. Across all $k\le3000$ the median of
+$|C_{\rm meas}/C_{\rm HL}-1|$ is $1.7\%$, and the scatter of measured against predicted lies tight on
+the diagonal (Fig.~\ref{fig:fig2}(A)).
+
+\begin{table}[t]
+\centering\small
+\begin{tabular}{rlcc}
+\toprule
+$k$ & structure & $C_{\rm meas}(k)$ & $C_{\rm HL}(k)$ \eqref{eq:Ck}\\
+\midrule
+1    & neutral ($\to G$)        & 0.4015 & 0.3969\\
+2    & $5\mid 3k\!-\!1,\ 7\mid 3k\!+\!1$ & 1.0742 & 1.0583\\
+5    & $5\mid k,\ 7\mid 3k\!-\!1$ & 1.6214 & 1.5875\\
+7    & $7\mid k,\ 5\mid 3k\!-\!1$ & 1.5350 & 1.5119\\
+35   & $5,7\mid k$              & 2.2985 & 2.2499\\
+77   & $7,11\mid k$             & 1.8966 & 1.8621\\
+210  & $5,7\mid k$              & 2.2508 & 2.2053\\
+2310 & $5,7,11\mid k$           & 3.0814 & 3.0408\\
+\bottomrule
+\end{tabular}
+\caption{The closed form \eqref{eq:Ck} against measured pair correlation at structured separations.
+Agreement is $\sim1.5$--$2\%$ throughout; the measured values sit uniformly just above the prediction,
+the signature of the density gradient isolated in \S5.}
+\label{tab:Ck}
+\end{table}
+
+The decisive feature is the \emph{sign} of the integrated correlation. Summed over $k\le3000$,
+$\sum(C_{\rm HL}(k)-1)=-5.47$: the local arithmetic is net \emph{negative}. Twin centres repel at
+short range. Through the identity~\eqref{eq:identity} this is exactly the sub-Poisson dip of
+Figure~\ref{fig:fig1}(A): feeding the closed-form $C_{\rm HL}$ into~\eqref{eq:identity} predicts
+$F\approx0.89$ at $H=100$ and $F\approx0.79$ at $H=3000$ (Table~\ref{tab:check}, last column),
+monotonically sub-Poisson. The local engine, by itself, never produces super-Poisson variance.
+
+\section{The decomposition: rigidity versus density gradient}
+The measured sum has the opposite sign: $\sum(C_{\rm meas}(k)-1)=+45.0$, strongly positive. The
+reconciliation is visible in Table~\ref{tab:Ck}: $C_{\rm meas}$ exceeds $C_{\rm HL}$ by a nearly
+uniform $\approx1.5\%$ at \emph{every} $k$. A small $k$-independent excess, summed over thousands of
+separations, swamps the bounded arithmetic deficit and flips the sign of the integral. Such a uniform
+offset is not arithmetic; it is the smooth decline of twin density across $[1,X]$. Two regions of
+different density contribute a positive product to the pair count at \emph{all} separations, raising
+$C(k)$ by the relative variance of the density, here $\approx1.6\%$---numerically the observed offset.
+
+We confirm this directly. Removing the smooth local density (a moving average at scale $W=10^{6}$,
+$W\gg H$) from each window count and recomputing the variance gives the detrended Fano $F_{\rm local}$;
+the variance of the smooth expected counts gives $F_{\rm trend}$. Table~\ref{tab:fano} and
+Figure~\ref{fig:fig1}(A) show the split. The local part is sub-Poisson throughout the cleanly separated
+range, dipping to $F_{\rm local}\approx0.82$, and it agrees with the singular-series prediction from
+$C_{\rm HL}$ to about $1\%$: at $H=100$, $F_{\rm local}=0.890$ against the predicted $0.890$; at
+$H=300$, $0.860$ against $0.860$ (Table~\ref{tab:check}, Fig.~\ref{fig:fig2}(B)). The trend part grows
+linearly, $F_{\rm trend}\propto H$ (equivalently $\Var_{\rm trend}\propto H^{2}$, as a deterministic
+density ramp must), and overtakes the local part near $H^{\ast}$, reaching $92\%$ of the total variance
+at $H=10^{5}$. The crossover scale $H^{\ast}\approx410$ is precisely where the global density gradient
+catches up with the local rigidity.
+
+\begin{table}[t]
+\centering\small
+\begin{tabular}{rccc}
+\toprule
+$H$ & $F_{\rm meas}$ & $F$ from $C_{\rm meas}$ \eqref{eq:identity} & $F$ from $C_{\rm HL}$ \eqref{eq:identity}\\
+\midrule
+100  & 0.9254 & 0.9243 & 0.8897\\
+300  & 0.9673 & 0.9674 & 0.8597\\
+500  & 1.0281 & 1.0281 & 0.8461\\
+1000 & 1.1929 & 1.1907 & 0.8254\\
+2000 & 1.5376 & 1.5336 & 0.8020\\
+3000 & 1.8895 & 1.8853 & 0.7890\\
+\bottomrule
+\end{tabular}
+\caption{The variance identity \eqref{eq:identity} as cross-check. Fed the \emph{measured} $C(k)$ it
+reproduces $F_{\rm meas}$ to $\lesssim0.3\%$ (validating the method). Fed the closed-form
+$C_{\rm HL}(k)$ it stays sub-Poisson and \emph{decreasing}---the local arithmetic alone never rises.
+The gap between the last two columns is the density-gradient content, isolated as $F_{\rm trend}$ in
+Table~\ref{tab:fano}.}
+\label{tab:check}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{p29_fig1.pdf}
+\caption{(A) The Fano factor and its decomposition. $F_{\rm total}$ (black) crosses $F=1$ at
+$H^{\ast}\approx410$ and rises steeply; the density-detrended local part $F_{\rm local}$ (blue) stays
+sub-Poisson; the smooth-density-gradient part $F_{\rm trend}$ (red) grows linearly and dominates at
+large $H$. (B) The local pair correlation $C(k)$ for $k\le200$: measured (blue) against the
+Hardy--Littlewood closed form \eqref{eq:Ck} (red), with the neutral level $G=0.397$ marked. Every
+arithmetic spike is reproduced.}
+\label{fig:fig1}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{p29_fig2.pdf}
+\caption{(A) Measured $C(k)$ against the closed form \eqref{eq:Ck} for all $k\le3000$; the scatter sits
+on $y=x$ (median deviation $1.7\%$) with the slight uniform excess of the density gradient. (B) The
+density-detrended local Fano $F_{\rm local}$ (blue) follows the prediction obtained by feeding
+$C_{\rm HL}$ into the variance identity \eqref{eq:identity} (red), confirming that the local variance is
+the Hardy--Littlewood singular series and is sub-Poisson.}
+\label{fig:fig2}
+\end{figure}
+
+\section{Scope and honest ledger}
+The experiment maps the short-interval twin-count variance completely into two measured mechanisms.
+The local pair correlation is the Hardy--Littlewood $4$-tuple singular series~\eqref{eq:Ck}, verified
+to $1.7\%$ in shape and to $\approx1\%$ in its variance consequence; its integral is negative, so the
+four-fold killer constraint renders twin centres locally sub-Poisson, and this is the observed dip. The
+super-Poisson rise is the deterministic decline of twin density across $[1,X]$, with
+$\Var_{\rm trend}\propto H^{2}$, reaching $92\%$ of the variance by $H=10^{5}$; the crossover
+$H^{\ast}\approx410$ separates the two regimes. Both findings are robust: the closed form is parameter
+free, and the detrended local Fano is stable to the smoothing scale $W$ for $H\ll W$ (varying $W$ from
+$5\times10^{5}$ to $4\times10^{6}$ moves $F_{\rm local}$ by $<1\%$ at $H=100$ and $<3\%$ at $H=3000$).
+
+We are equally clear about what is \emph{not} resolved. The genuine Montgomery--Soundararajan
+content---the lower-order term in the variance \emph{at fixed density}, the $H\log(X/H)$ fluctuation
+and its constant, together with the asymptotic Gaussianity of the count \cite{MS}---is the quantity our
+$F_{\rm local}$ approximates. At the reachable $H$ and $X=6\times10^{8}$ that quantity is
+\emph{dominated by the singular-series rigidity}: $F_{\rm local}$ \emph{decreases} with $H$ over the
+clean range, the opposite of the slow logarithmic increase the lower-order term would eventually
+contribute, so the Montgomery--Soundararajan fluctuation sits below our resolution. We can bound where
+it must appear---it is hidden beneath a rigidity term of relative size $|\sum(C_{\rm HL}-1)|/H$ and
+beneath a deterministic trend of relative size $\propto H$---but we cannot isolate its constant or test
+its Gaussianity at this $X$. Reaching it would require either a much larger $X$ at fixed octave (to let
+$\log(X/H)$ grow past the rigidity floor) or a fixed-density dyadic restriction with far more windows
+than $6\times10^{8}$ centres provide. We leave it open, as the honest frontier of this question.
+
+Everything here equals the discrete sieve count, takes the Hardy--Littlewood heuristic as input, and
+makes no claim about the infinitude of twins or of any constellation.
+
+\paragraph{Data and code availability.} The sieve (to $6N=6\times10^{8}$), the Fano-ladder, pair-cor\-relation,
+Hardy--Littlewood-prediction, variance-identity and density-detrend computations, the robustness scan,
+and the figure scripts are openly available at
+\url{https://github.com/Ruqing1963/6N-shortinterval-variance}.
+
+\begin{thebibliography}{9}
+\bibitem{HL} G.~H.~Hardy, J.~E.~Littlewood, \emph{Some problems of `Partitio Numerorum'; III}, Acta Math.\ \textbf{44} (1923), 1--70.
+\bibitem{MS} H.~L.~Montgomery, K.~Soundararajan, \emph{Primes in short intervals}, Comm.\ Math.\ Phys.\ \textbf{252} (2004), 589--617.
+\bibitem{Gallagher} P.~X.~Gallagher, \emph{On the distribution of primes in short intervals}, Mathematika \textbf{23} (1976), 4--9.
+\bibitem{EK} P.~Erd\H{o}s, M.~Kac, \emph{The Gaussian law of errors in the theory of additive number theoretic functions}, Amer.\ J.\ Math.\ \textbf{62} (1940), 738--742.
+\bibitem{PI} R.~Chen, \emph{Conditional density on the 6N skeleton} (Part I), Zenodo, doi:10.5281/zenodo.20470367 (2026).
+\bibitem{PIV} R.~Chen, \emph{Second-order spatial-compression residual} (Part IV), Zenodo, doi:10.5281/zenodo.20500465 (2026).
+\bibitem{PXII} R.~Chen, \emph{The microscopic root $1/(q-2)$ and the mean shift} (Part XII), Zenodo, doi:10.5281/zenodo.20528446 (2026).
+\bibitem{PXXIII} R.~Chen, \emph{Phase transition kinetics and topological event horizons at extreme $\omega$} (Part XXIII), Zenodo, doi:10.5281/zenodo.20586919 (2026).
+\bibitem{PXXVI} R.~Chen, \emph{The second moment of $\omega$ under twin-centre conditioning on the 6N skeleton} (Part XXVI), Zenodo, doi:10.5281/zenodo.20593654 (2026).
+\bibitem{PXXVIII} R.~Chen, \emph{Auditing the wind tunnel: the twin-enrichment closed form at reachable $\omega$} (Part XXVIII), Zenodo, doi:10.5281/zenodo.20596631 (2026).
+\bibitem{review} R.~Chen, \emph{Arithmetic geodynamics on the 6N skeleton: a review of Parts I--XIX}, Zenodo, doi:10.5281/zenodo.20585301 (2026).
+\end{thebibliography}
+
+\end{document}
